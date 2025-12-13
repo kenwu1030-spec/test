@@ -1,29 +1,23 @@
+!pip install streamlit
 import streamlit as st
-from transformers import pipeline
+from transformers import pipeline, AutoTokenizer, AutoModelForSequenceClassification
 
-# Set up the page
-st.set_page_config(page_title="Text to Audio Story", page_icon="🦜")
-st.header("Turn Your Text into an Audio Story")
+def main():
+    tokenizer = AutoTokenizer.from_pretrained("kenwuhj/CustomModel_ZA_sentiment")
+    model = AutoModelForSequenceClassification.from_pretrained("kenwuhj/CustomModel_ZA_sentiment")
+    sentiment_pipeline = pipeline("sentiment-analysis", model=model, tokenizer=tokenizer)
 
-# User enters text
-user_text = st.text_area("Enter a prompt or scenario for your story:")
+    st.title("Sentiment Analysis with HuggingFace Spaces")
+    st.write("Enter a sentence to analyze its sentiment:")
 
-if user_text:
-    # Stage 1: Text to Story
-    st.text('Generating a story...')
-    story_generator = pipeline("text-generation", model="pranavpsv/genre-story-generator-v2")
-    story = story_generator(user_text)[0]['generated_text']
-    st.write(story)
+    user_input = st.text_input("Input text for sentiment analysis:", label_visibility="hidden")
+    if user_input:
+        result = sentiment_pipeline(user_input)
+        sentiment = result[0]["label"]
+        confidence = result[0]["score"]
 
-    # Stage 2: Story to Audio
-    st.text('Generating audio data...')
-    audio_generator = pipeline("text-to-audio", model="Matthijs/mms-tts-eng")
-    speech_output = audio_generator(story)
+        st.write(f"Sentiment: {sentiment}")
+        st.write(f"Confidence: {confidence:.2f}")
 
-    # Play button
-    if st.button("Play Audio"):
-        audio_array = speech_output["audio"]
-        sample_rate = speech_output["sampling_rate"]
-        # Play audio directly using Streamlit
-        st.audio(audio_array,
-                 sample_rate=sample_rate)
+if __name__ == "__main__":
+    main()
