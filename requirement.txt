@@ -1,4 +1,6 @@
-
-streamlit
 transformers
 torch
+streamlit
+python-docx
+sentencepiece
+accelerate
