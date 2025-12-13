@@ -1,6 +1,7 @@
+streamlit
 transformers
 torch
-streamlit
-python-docx
-sentencepiece
-accelerate
+requests
+beautifulsoup4
+pandas
+numpy
